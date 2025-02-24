@@ -296,6 +296,41 @@ async def download(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logger.error(f"Download error: {str(e)}")
         await update.message.reply_text("❌ Хатогӣ ҳангоми боргирӣ рух дод. Лутфан, дубора кӯшиш кунед.")
 
+async def render_guide(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Send step-by-step deployment screenshots for Render.com"""
+    guide_steps = [
+        {
+            "caption": "Қадами 1: Сабти ном дар Render.com\n\nБа сомонаи render.com равед ва тугмаи 'Sign Up'-ро пахш кунед. Шумо метавонед бо ҳисоби GitHub худ ворид шавед.",
+            "file": "render_guide_1.png"
+        },
+        {
+            "caption": "Қадами 2: Эҷоди лоиҳаи нав\n\nТугмаи 'New +' -ро пахш кунед ва 'Web Service'-ро интихоб кунед. Репозиторияи GitHub-ро пайваст кунед ё файлҳоро бевосита боргузорӣ кунед.",
+            "file": "render_guide_2.png"
+        },
+        {
+            "caption": "Қадами 3: Танзимоти муҳит\n\nТанзимоти муҳитро илова кунед, барои мисол BOT_TOKEN ва DATABASE_URL. Илова бар Build ва Start Commands низ дида мешавад.",
+            "file": "render_guide_3.png"
+        },
+        {
+            "caption": "Қадами 4: Эҷод ва интиқоли хизмат\n\nBuild Command: pip install -r requirements.txt ва Start Command: python attached_assets/bot.py. Лоиҳаи худро эҷод кунед ва расман бо Render.com нигаҳдории доимиро оғоз кунед.",
+            "file": "render_guide_4.png"
+        }
+    ]
+
+    try:
+        for step in guide_steps:
+            with open(step["file"], "rb") as photo:
+                await context.bot.send_photo(
+                    chat_id=update.effective_chat.id,
+                    photo=photo,
+                    caption=step["caption"]
+                )
+    except Exception as e:
+        logger.error(f"Error sending render guide: {str(e)}")
+        await update.effective_message.reply_text(
+            "❌ Хатогӣ дар фиристодани дастурамал рух дод. Лутфан, дубора кӯшиш кунед."
+        )
+
 def main():
     reconnect_delay = 5  # Start with 5 seconds delay
     max_reconnect_delay = 30  # Maximum delay between reconnection attempts
@@ -314,6 +349,7 @@ def main():
             # Add handlers
             application.add_handler(CommandHandler("start", start))
             application.add_handler(CommandHandler("download", download))
+            application.add_handler(CommandHandler("render_guide", render_guide))
             application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
             application.add_handler(CallbackQueryHandler(button_click))
 
