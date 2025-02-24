@@ -1,17 +1,27 @@
 # Forex Analysis Telegram Bot
 
-A multi-language Telegram bot for financial market analysis with technical indicators and user management.
+A multi-language Telegram bot for financial market analysis that provides advanced technical indicators and user-friendly trading tools.
 
 ## Features
 
 - Multi-language support (Tajik, Russian, Uzbek, Kazakh, English)
-- Real-time market analysis
-- Technical indicators (RSI, MACD, EMA, Bollinger Bands)
+- Real-time market analysis with technical indicators:
+  - RSI
+  - MACD
+  - EMA
+  - Bollinger Bands
+- 30+ currency pairs support
 - User authentication system
 - Admin panel
-- Monitoring system
+- Monitoring system with web interface
+- Automatic error recovery
+- Detailed market analysis charts
 
-## Installation
+## Quick Deploy
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+## Manual Installation
 
 1. Clone the repository:
 ```bash
@@ -19,82 +29,70 @@ git clone https://github.com/yourusername/forex-analysis-bot.git
 cd forex-analysis-bot
 ```
 
-2. Create and activate virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Linux/Mac
-# or
-.\venv\Scripts\activate  # On Windows
-```
-
-3. Install dependencies:
+2. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Create `.env` file and add your configuration:
+3. Create `.env` file:
 ```bash
-# Copy example config
 cp .env.example .env
 # Edit with your values
-nano .env
 ```
 
-## Server Deployment
+Required environment variables:
+- `BOT_TOKEN`: Telegram bot token from @BotFather
+- `DATABASE_URL`: PostgreSQL database URL
 
-1. Copy files to server:
+## Deployment
+
+### Render.com (Recommended)
+
+1. Fork this repository
+2. Create a new Web Service on Render
+3. Connect your GitHub repository
+4. Add environment variables:
+   - `BOT_TOKEN`
+   - `DATABASE_URL`
+5. Deploy!
+
+### Manual Server Deployment
+
+1. Install requirements:
 ```bash
-# Create directory
+sudo apt update
+sudo apt install python3 python3-pip postgresql
+```
+
+2. Copy files:
+```bash
 sudo mkdir -p /root/bot
-# Copy all files
 sudo cp -r * /root/bot/
 ```
 
-2. Install service:
+3. Install service:
 ```bash
-# Copy service file
 sudo cp telegram-bot.service /etc/systemd/system/
-# Reload systemd
 sudo systemctl daemon-reload
-# Enable service
 sudo systemctl enable telegram-bot
-# Start service
 sudo systemctl start telegram-bot
 ```
 
-3. Check status:
+## Development
+
+1. Install development dependencies:
 ```bash
-# View service status
-sudo systemctl status telegram-bot
-# View logs
-sudo journalctl -u telegram-bot -f
+pip install -r requirements.txt
 ```
 
-4. Monitor via web interface:
-```
-http://your-server:8081
-```
-
-## Management Commands
-
-1. Start bot:
+2. Run bot:
 ```bash
-sudo systemctl start telegram-bot
+python attached_assets/bot.py
 ```
 
-2. Stop bot:
-```bash
-sudo systemctl stop telegram-bot
+3. Monitor via web interface:
 ```
-
-3. Restart bot:
-```bash
-sudo systemctl restart telegram-bot
-```
-
-4. View logs:
-```bash
-sudo journalctl -u telegram-bot -f
+http://localhost:8081
 ```
 
 ## Monitoring System
@@ -110,9 +108,12 @@ Access monitoring dashboard at:
 http://your-server:8081
 ```
 
-## Environment Variables
+## Support
 
-Required environment variables in `.env`:
-- `BOT_TOKEN`: Your Telegram bot token from @BotFather
-- `DATABASE_URL`: PostgreSQL database URL
-- Other database configuration (see .env.example)
+For support and questions:
+- Telegram: @tradeporu
+- Website: [TRADEPO.RU](https://tradepo.ru)
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
