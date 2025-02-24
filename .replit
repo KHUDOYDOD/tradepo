@@ -28,6 +28,7 @@ task = "packager.installForAll"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python attached_assets/bot.py"
+waitForPort = 8081
 
 [deployment]
 run = ["sh", "-c", "python attached_assets/bot.py"]

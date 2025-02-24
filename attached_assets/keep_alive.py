@@ -22,11 +22,12 @@ def check_bot_process():
     """Check if the bot process is running"""
     for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
         try:
-            if 'python' in proc.info['name'].lower() and 'bot.py' in ' '.join(proc.info['cmdline']):
-                return True
+            cmdline = ' '.join(proc.info['cmdline'] or [])
+            if 'python' in proc.info['name'].lower() and 'bot.py' in cmdline:
+                return proc.pid
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             continue
-    return False
+    return None
 
 def check_bot_health():
     """Check if the bot is responding to Telegram"""
@@ -44,9 +45,9 @@ def check_bot_health():
 
 @app.route('/')
 def home():
-    bot_process = check_bot_process()
-    bot_health = check_bot_health() if bot_process else False
-    status = "✅ Bot is running and healthy" if bot_health else "⚠️ Bot is running but not responding" if bot_process else "❌ Bot is not running"
+    bot_pid = check_bot_process()
+    bot_health = check_bot_health() if bot_pid else False
+    status = "✅ Bot is running and healthy" if bot_health else "⚠️ Bot is running but not responding" if bot_pid else "❌ Bot is not running"
 
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     memory_usage = psutil.Process().memory_info().rss / 1024 / 1024  # Convert to MB
@@ -126,18 +127,22 @@ def monitor_bot():
     """Monitor bot health and restart if needed"""
     while True:
         try:
-            if not check_bot_process() or not check_bot_health():
+            bot_pid = check_bot_process()
+            bot_healthy = check_bot_health() if bot_pid else False
+
+            if not bot_healthy:
                 logger.warning("Bot is not healthy, attempting to restart")
-                # Kill existing python processes
-                for proc in psutil.process_iter(['pid', 'name']):
+                if bot_pid:
                     try:
-                        if 'python' in proc.info['name'].lower():
-                            proc.kill()
+                        # Kill only the bot process
+                        psutil.Process(bot_pid).terminate()
+                        time.sleep(2)  # Give it time to terminate gracefully
                     except (psutil.NoSuchProcess, psutil.AccessDenied):
-                        continue
+                        pass
 
                 # Start bot process
-                os.system('python bot.py &')
+                logger.info("Starting bot process...")
+                os.system('python attached_assets/bot.py &')
                 logger.info("Bot restarted")
 
             time.sleep(60)  # Check every minute
