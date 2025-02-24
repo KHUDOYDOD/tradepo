@@ -1,0 +1,18 @@
+[Unit]
+Description=Telegram Forex Analysis Bot
+After=network.target postgresql.service
+Wants=postgresql.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/bot
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=/root/bot/.env
+ExecStart=/usr/bin/python3 /root/bot/bot.py
+Restart=always
+RestartSec=10
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
